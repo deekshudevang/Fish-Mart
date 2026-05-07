@@ -157,7 +157,7 @@ export default function Dashboard() {
                 <div className="relative shrink-0">
                    <div className="absolute inset-0 bg-cyan-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
                    <img
-                    src={p.image || '/placeholder.png'}
+                    src={p.images?.[0] || p.image || '/products/placeholder.png'}
                     alt={p.name}
                     className="w-14 h-14 rounded-2xl object-cover relative z-10"
                   />

@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import { CartProvider } from './context/CartContext';
 import Navbar from './components/Navbar';
 import Cart from './components/Cart';
@@ -20,6 +21,7 @@ export default function App() {
   return (
     <Router>
       <CartProvider>
+        <Toaster position="bottom-right" toastOptions={{ style: { background: '#0a1628', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' } }} />
         <Routes>
           {/* Consumer Routes */}
           <Route

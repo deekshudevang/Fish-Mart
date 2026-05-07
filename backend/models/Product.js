@@ -44,7 +44,7 @@ const Product = sequelize.define(
       field: 'video_url',
     },
     category: {
-      type: DataTypes.ENUM('Freshwater', 'Saltwater', 'Rare'),
+      type: DataTypes.STRING,
       defaultValue: 'Freshwater',
     },
     stock: {
@@ -78,6 +78,7 @@ Product.prototype.toJSONWithRating = function () {
   } else {
     json.avgRating = 0;
   }
+  json.image = this.image;
   return json;
 };
 

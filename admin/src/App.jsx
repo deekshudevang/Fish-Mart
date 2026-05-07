@@ -10,6 +10,7 @@ import Orders from './pages/Orders';
 import Analytics from './pages/Analytics';
 import Users from './pages/Users';
 import CMS from './pages/CMS';
+import { Toaster } from 'react-hot-toast';
 
 function AdminLayout({ children }) {
   return (
@@ -89,6 +90,7 @@ export default function App() {
   return (
     <Router>
       <AuthProvider>
+        <Toaster position="top-right" toastOptions={{ style: { background: '#0f172a', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' } }} />
         <AppRoutes />
       </AuthProvider>
     </Router>

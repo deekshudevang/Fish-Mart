@@ -5,10 +5,10 @@ const { authMiddleware, JWT_SECRET, JWT_REFRESH_SECRET } = require('../middlewar
 
 const router = express.Router();
 
-// Default Super Admin (created on first login attempt if no admins exist)
+// C2 FIX: No hardcoded admin credentials — require environment variables
 const DEFAULT_ADMIN = {
-  email: process.env.ADMIN_EMAIL || 'admin@exoticfishmart.com',
-  password: process.env.ADMIN_PASSWORD || 'ExoticFish2024!',
+  email: process.env.ADMIN_EMAIL,
+  password: process.env.ADMIN_PASSWORD,
   name: 'Super Admin',
   role: 'super-admin',
 };
@@ -22,11 +22,16 @@ router.post('/admin/login', async (req, res) => {
       return res.status(400).json({ error: 'Email and password are required.' });
     }
 
-    // Auto-create default super admin if no admins exist
+    // Auto-create default super admin if no admins exist AND env vars are set
     const adminCount = await Admin.count();
     if (adminCount === 0) {
+      if (!DEFAULT_ADMIN.email || !DEFAULT_ADMIN.password) {
+        return res.status(500).json({ 
+          error: 'No admins exist and ADMIN_EMAIL/ADMIN_PASSWORD are not configured in environment.' 
+        });
+      }
       await Admin.create(DEFAULT_ADMIN);
-      console.log('🔑 Default super admin created: admin@exoticfishmart.com');
+      console.log('🔑 Default super admin created from environment variables.');
     }
 
     // Find admin by email

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiSave, FiAlertCircle, FiCheckCircle, FiGlobe, FiInfo, FiMail, FiFileText } from 'react-icons/fi';
+import { FiSave, FiAlertCircle, FiCheckCircle, FiGlobe, FiInfo, FiMail, FiFileText, FiTrash } from 'react-icons/fi';
 
 export default function CMS() {
   const { api } = useAuth();
@@ -20,6 +20,11 @@ export default function CMS() {
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState(null);
 
+  const [faqs, setFaqs] = useState([
+    { q: "How do you ensure live delivery?", a: "We use professional-grade oxygenated bags, insulated thermal packaging, and 24-hour express shipping to ensure your fish arrive healthy." },
+    { q: "What is your satisfaction guarantee?", a: "If your fish doesn't arrive alive or healthy, we offer a 100% refund or replacement. Just send us a photo within 2 hours of delivery." },
+  ]);
+
   useEffect(() => {
     fetchSettings();
   }, []);
@@ -29,6 +34,13 @@ export default function CMS() {
       const { data } = await api.get('/settings');
       if (data && typeof data === 'object' && Object.keys(data).length > 0) {
         setSettings(prev => ({ ...prev, ...data }));
+        if (data.faqs) {
+          try {
+            setFaqs(JSON.parse(data.faqs));
+          } catch (e) {
+            console.error("Failed to parse FAQs", e);
+          }
+        }
       }
     } catch (err) {
       console.error('Error fetching settings:', err);
@@ -42,7 +54,11 @@ export default function CMS() {
     setSaving(true);
     setStatus(null);
     try {
-      await api.put('/settings', { settings });
+      const updatedSettings = { 
+        ...settings, 
+        faqs: JSON.stringify(faqs) 
+      };
+      await api.put('/settings', { settings: updatedSettings });
       setStatus({ type: 'success', message: 'Intelligence Grid Updated Successfully!' });
       setTimeout(() => setStatus(null), 5000);
     } catch (err) {
@@ -50,6 +66,14 @@ export default function CMS() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const addFaq = () => setFaqs([...faqs, { q: '', a: '' }]);
+  const removeFaq = (index) => setFaqs(faqs.filter((_, i) => i !== index));
+  const updateFaq = (index, field, value) => {
+    const newFaqs = [...faqs];
+    newFaqs[index][field] = value;
+    setFaqs(newFaqs);
   };
 
   if (loading) {
@@ -173,7 +197,7 @@ export default function CMS() {
                   className="input-admin resize-none"
                 />
              </div>
-             <div className="space-y-2">
+             <div className="space-y-2 md:col-span-2">
                 <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Logistic Data (Shipping)</label>
                 <textarea
                   rows="4"
@@ -182,15 +206,67 @@ export default function CMS() {
                   className="input-admin resize-none"
                 />
              </div>
-             <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Knowledge Base (FAQ)</label>
-                <textarea
-                  rows="4"
-                  value={settings.faq_content}
-                  onChange={(e) => setSettings({ ...settings, faq_content: e.target.value })}
-                  className="input-admin resize-none"
-                />
-             </div>
+           </div>
+        </div>
+
+        {/* FAQ Management */}
+        <div className="glass-card p-10 space-y-8">
+           <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-3">
+                <FiInfo size={20} className="text-cyan-400" />
+                <h2 className="text-xl font-black text-white uppercase tracking-tighter italic">Frequently Asked Questions</h2>
+              </div>
+              <button
+                type="button"
+                onClick={addFaq}
+                className="px-4 py-2 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-cyan-500/20 transition-all"
+              >
+                + Add FAQ
+              </button>
+           </div>
+          
+           <div className="space-y-6">
+              {faqs.map((faq, index) => (
+                <motion.div 
+                  key={index}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-6 bg-white/[0.02] border border-white/5 rounded-2xl space-y-4 relative group"
+                >
+                  <button
+                    type="button"
+                    onClick={() => removeFaq(index)}
+                    className="absolute top-4 right-4 p-2 text-slate-500 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                  >
+                    <FiTrash size={14} />
+                  </button>
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-black text-slate-600 uppercase tracking-widest">Question {index + 1}</label>
+                    <input
+                      type="text"
+                      value={faq.q}
+                      onChange={(e) => updateFaq(index, 'q', e.target.value)}
+                      placeholder="e.g. How do you ensure live delivery?"
+                      className="input-admin !py-3"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-black text-slate-600 uppercase tracking-widest">Answer {index + 1}</label>
+                    <textarea
+                      rows="2"
+                      value={faq.a}
+                      onChange={(e) => updateFaq(index, 'a', e.target.value)}
+                      placeholder="e.g. We use professional-grade oxygenated bags..."
+                      className="input-admin !py-3 resize-none"
+                    />
+                  </div>
+                </motion.div>
+              ))}
+              {faqs.length === 0 && (
+                <div className="text-center py-10 border-2 border-dashed border-white/5 rounded-[2rem]">
+                  <p className="text-slate-600 text-xs font-black uppercase tracking-widest">No FAQs configured</p>
+                </div>
+              )}
            </div>
         </div>
 

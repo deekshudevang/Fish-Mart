@@ -1,4 +1,4 @@
-import { FiStar, FiImage, FiVideo, FiEdit3, FiTrash2, FiChevronUp, FiChevronDown, FiAlertCircle } from 'react-icons/fi';
+import { FiStar, FiImage, FiVideo, FiEdit3, FiTrash2, FiChevronUp, FiChevronDown, FiAlertCircle, FiCalendar, FiPackage } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 
 const categoryBadge = {
@@ -43,25 +43,19 @@ export default function ProductTable({
                 </th>
                 <th onClick={() => onSort('name')} className="px-6 py-6 cursor-pointer group">
                   <div className="flex items-center space-x-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 group-hover:text-white transition-colors">
-                    <span>Asset Identity</span>
+                    <span>Product Identity</span>
                     <SortIcon field="name" />
                   </div>
                 </th>
-                <th className="px-6 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Classification</th>
-                <th onClick={() => onSort('price')} className="px-6 py-6 cursor-pointer group">
-                  <div className="flex items-center space-x-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 group-hover:text-white transition-colors">
-                    <span>Value</span>
-                    <SortIcon field="price" />
-                  </div>
-                </th>
+                <th className="px-6 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Market Metrics</th>
+                <th className="px-6 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Visual Assets</th>
                 <th onClick={() => onSort('stock')} className="px-6 py-6 cursor-pointer group">
                   <div className="flex items-center space-x-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 group-hover:text-white transition-colors">
-                    <span>Units</span>
+                    <span>Deployment Status</span>
                     <SortIcon field="stock" />
                   </div>
                 </th>
-                <th className="px-6 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Rating</th>
-                <th className="sticky right-0 bg-[#0a0f1e] z-20 px-6 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 text-right shadow-[-10px_0_15px_-3px_rgba(0,0,0,0.5)]">Commands</th>
+                <th className="sticky right-0 bg-[#0a0f1e] z-20 px-6 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 text-right shadow-[-10px_0_15px_-3px_rgba(0,0,0,0.5)]">Registry Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -83,55 +77,72 @@ export default function ProductTable({
                     </td>
                     <td className="px-6 py-5">
                       <div className="flex items-center space-x-4">
-                        <div className="relative shrink-0">
+                        <div className="relative shrink-0 group/img">
                            <div className="absolute inset-0 bg-cyan-500/20 blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
                            <img
-                            src={p.image || '/placeholder.png'}
+                            src={p.image || (p.images?.[0]) || '/placeholder.png'}
                             alt={p.name}
-                            className="w-12 h-12 rounded-xl object-cover relative z-10 border border-white/10"
+                            className="w-14 h-14 rounded-xl object-cover relative z-10 border border-white/10 group-hover/img:scale-110 transition-transform duration-500"
                           />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-black text-white uppercase tracking-tight group-hover:text-cyan-400 transition-colors">{p.name}</p>
-                          <p className="text-[9px] text-slate-600 font-bold tracking-widest mt-1">ID: {p.id?.toString().substring(0, 8)}...</p>
+                          <p className="text-sm font-black text-white uppercase tracking-tight group-hover:text-cyan-400 transition-colors line-clamp-1">{p.name}</p>
+                          <p className="text-[9px] text-slate-600 font-bold tracking-widest mt-1">SN: {p.id?.toString().substring(0, 12).toUpperCase()}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-5">
-                      <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-[0.2em] border ${categoryBadge[p.category] || 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20'}`}>
-                        {p.category}
-                      </span>
-                    </td>
-                    <td className="px-6 py-5 text-sm font-black text-white italic">₹{Number(p.price).toLocaleString()}</td>
-                    <td className="px-6 py-5">
-                      <div className="flex items-center space-x-3">
-                        <span className={`text-xs font-black ${p.stock < 10 ? 'text-red-500' : 'text-slate-300'}`}>
-                          {p.stock} Units
-                        </span>
-                        {p.stock < 10 && <FiAlertCircle size={14} className="text-red-500 animate-pulse" />}
-                      </div>
+                       <div className="space-y-1">
+                          <p className="text-sm font-black text-emerald-400 italic">₹{Number(p.price).toLocaleString()}</p>
+                          <div className="flex items-center gap-2">
+                             <div className={`w-1.5 h-1.5 rounded-full ${p.stock < 10 ? 'bg-red-500 animate-pulse' : 'bg-emerald-500'}`} />
+                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{p.stock} In Reserve</p>
+                          </div>
+                       </div>
                     </td>
                     <td className="px-6 py-5">
-                      <div className="flex items-center space-x-1.5">
-                        <FiStar size={14} className="text-yellow-400 fill-yellow-400" />
-                        <span className="text-xs font-black text-slate-300">{p.avgRating > 0 ? p.avgRating.toFixed(1) : 'NEW'}</span>
-                      </div>
+                       <div className="flex items-center gap-2">
+                          <div className="flex -space-x-2">
+                             {(p.images || []).slice(0, 3).map((img, i) => (
+                               <div key={i} className="w-8 h-8 rounded-lg border-2 border-[#0a0f1e] overflow-hidden bg-white/5">
+                                  <img src={img} className="w-full h-full object-cover" />
+                               </div>
+                             ))}
+                             {(p.images?.length > 3) && (
+                               <div className="w-8 h-8 rounded-lg border-2 border-[#0a0f1e] bg-white/5 flex items-center justify-center text-[8px] font-black text-slate-500">
+                                  +{p.images.length - 3}
+                               </div>
+                             )}
+                          </div>
+                          {p.videoUrl && <FiVideo size={14} className="text-cyan-400 ml-2" />}
+                       </div>
+                    </td>
+                    <td className="px-6 py-5">
+                       <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                             <FiCalendar size={12} className="text-slate-500" />
+                             <p className="text-[10px] font-black text-white uppercase tracking-widest">
+                                {p.shipmentDate ? new Date(p.shipmentDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : 'N/A'}
+                             </p>
+                          </div>
+                          <p className="text-[8px] font-black text-slate-600 uppercase tracking-[0.2em]">Deployment Schedule</p>
+                       </div>
                     </td>
                     <td className="sticky right-0 bg-[#0a0f1e]/80 backdrop-blur-md z-20 px-6 py-5 group-hover:bg-[#0a0f1e] transition-colors shadow-[-10px_0_15px_-3px_rgba(0,0,0,0.5)]">
-                      <div className="flex items-center justify-end space-x-3">
+                      <div className="flex items-center justify-end space-x-2">
                         <button 
                           onClick={() => onEdit(p)} 
-                          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500/5 text-cyan-400 hover:bg-cyan-500/10 border border-cyan-500/10 transition-all text-[10px] font-black uppercase tracking-widest"
+                          className="p-3 rounded-xl bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 transition-all"
+                          title="Modify Asset"
                         >
-                          <FiEdit3 size={14} />
-                          <span>Modify</span>
+                          <FiEdit3 size={16} />
                         </button>
                         <button 
                           onClick={() => onDelete(p.id)} 
-                          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500/5 text-red-500 hover:bg-red-500/10 border border-red-500/10 transition-all text-[10px] font-black uppercase tracking-widest"
+                          className="p-3 rounded-xl bg-red-500/5 text-red-500/50 hover:text-red-500 hover:bg-red-500/10 transition-all"
+                          title="Purge Asset"
                         >
-                          <FiTrash2 size={14} />
-                          <span>Purge</span>
+                          <FiTrash2 size={16} />
                         </button>
                       </div>
                     </td>

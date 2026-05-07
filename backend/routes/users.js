@@ -5,7 +5,12 @@ const User = require('../models/User');
 
 const router = express.Router();
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-const JWT_SECRET = process.env.JWT_SECRET || 'exotic-fish-mart-secret-key-2024';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  console.error('❌ FATAL: JWT_SECRET must be set in environment variables.');
+  process.exit(1);
+}
 
 // Middleware to verify Customer JWT
 async function customerAuthMiddleware(req, res, next) {
@@ -95,7 +100,7 @@ router.post('/google-login', async (req, res) => {
     });
   } catch (error) {
     console.error('❌ Google verification failed:', error.message);
-    res.status(401).json({ error: 'Authentication failed: ' + error.message });
+    res.status(401).json({ error: 'Authentication failed. Please try again.' });
   }
 });
 

@@ -1,18 +1,16 @@
-const dotenv = require('dotenv');
+require('dotenv').config();
 const sequelize = require('./models/db');
 const Product = require('./models/Product');
 const Review = require('./models/Review');
 const Admin = require('./models/Admin');
 const Settings = require('./models/Settings');
 
-dotenv.config();
-
 const fishData = [
   {
     name: 'Platinum Arowana',
     description: 'The legendary "dragon fish" — a rare platinum-colored specimen prized by collectors worldwide.',
     price: 124999,
-    category: 'Rare',
+    category: 'Rare Findings',
     stock: 3,
     images: ['/products/arowana.png'],
     reviews: [{ rating: 5, comment: 'Majestic and healthy!', user: 'DragonCollector' }],
@@ -39,7 +37,7 @@ const fishData = [
     name: 'Flowerhorn — Red Dragon',
     description: 'Impressive hybrid cichlid with a massive nuchal hump and fiery coloring.',
     price: 16999,
-    category: 'Rare',
+    category: 'Rare Findings',
     stock: 12,
     images: ['/products/flowerhorn.png'],
     reviews: [{ rating: 5, comment: 'Incredible personality.', user: 'CichlidGuy' }],
@@ -66,7 +64,7 @@ const fishData = [
     name: 'Zebra Pleco — L046',
     description: 'The holy grail of plecos. Striking black and white zebra stripes.',
     price: 28999,
-    category: 'Rare',
+    category: 'Rare Findings',
     stock: 5,
     images: ['/products/pleco.png'],
     reviews: [{ rating: 5, comment: 'Immaculate specimen.', user: 'RareAqua' }],

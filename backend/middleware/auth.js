@@ -1,8 +1,15 @@
 const jwt = require('jsonwebtoken');
 const Admin = require('../models/Admin');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'exotic-fish-mart-secret-key-2024';
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'exotic-fish-mart-refresh-2024';
+// C1 FIX: No hardcoded fallbacks — fail fast if secrets are missing
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+
+if (!JWT_SECRET || !JWT_REFRESH_SECRET) {
+  console.error('❌ FATAL: JWT_SECRET and JWT_REFRESH_SECRET must be set in environment variables.');
+  console.error('   Create a .env file with strong random secrets.');
+  process.exit(1);
+}
 
 // Full auth middleware — loads admin from DB
 async function authMiddleware(req, res, next) {

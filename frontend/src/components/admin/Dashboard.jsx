@@ -59,13 +59,13 @@ export default function AdminDashboard() {
   };
 
   const handleEdit = (p) => {
-    setFormData({ name: p.name, description: p.description, price: p.price, image: p.image || '', shipmentDate: p.shipmentDate?.split('T')[0] || '', category: p.category || 'Freshwater', stock: p.stock || 50 });
+    setFormData({ name: p.name, description: p.description, price: p.price, images: p.images || (p.image ? [p.image] : []), shipmentDate: p.shipmentDate?.split('T')[0] || '', category: p.category || 'Freshwater', stock: p.stock || 50 });
     setEditingId(p.id);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const resetForm = () => {
-    setFormData({ name: '', description: '', price: '', image: '', shipmentDate: '', category: 'Freshwater', stock: 50 });
+    setFormData({ name: '', description: '', price: '', images: [], shipmentDate: '', category: 'Freshwater', stock: 50 });
     setEditingId(null);
   };
 
@@ -195,15 +195,62 @@ export default function AdminDashboard() {
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Asset Category</label>
                     <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full px-6 py-4 bg-white/5 border border-white/5 rounded-2xl focus:border-cyan-500/50 outline-none transition-all text-sm font-bold text-white appearance-none">
-                      <option value="Freshwater">Freshwater</option>
-                      <option value="Saltwater">Saltwater</option>
-                      <option value="Rare">Rare Finds</option>
+                      <optgroup label="Fishes" className="bg-[#060a14] text-cyan-400">
+                        <option value="Freshwater" className="bg-[#060a14] text-white">Fresh Water</option>
+                        <option value="Saltwater" className="bg-[#060a14] text-white">Salt Water</option>
+                        <option value="Rare Findings" className="bg-[#060a14] text-white">Rare Findings</option>
+                      </optgroup>
+                      <optgroup label="Other Assets" className="bg-[#060a14] text-magenta-400">
+                        <option value="Aquarium Plants" className="bg-[#060a14] text-white">Aquarium Plants</option>
+                        <option value="Fish Food" className="bg-[#060a14] text-white">Fish Food</option>
+                        <option value="Aquarium Accessories" className="bg-[#060a14] text-white">Aquarium Accessories</option>
+                      </optgroup>
                     </select>
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Launch Date</label>
                     <input type="date" value={formData.shipmentDate} onChange={e => setFormData({...formData, shipmentDate: e.target.value})} className="w-full px-6 py-4 bg-white/5 border border-white/5 rounded-2xl focus:border-cyan-500/50 outline-none transition-all text-sm font-bold text-white" required />
                   </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Asset Image (PNG/JPG)</label>
+                  {formData.images && formData.images.length > 0 && (
+                    <div className="flex flex-wrap gap-4 mb-2">
+                      {formData.images.map((img, idx) => (
+                        <div key={idx} className="relative group w-20 h-20 rounded-2xl overflow-hidden border border-white/10 bg-black/40">
+                          <img src={img} alt="Preview" className="w-full h-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={() => setFormData({ ...formData, images: formData.images.filter((_, i) => i !== idx) })}
+                            className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                          >
+                            <FiTrash2 size={12} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <label className="block w-full px-6 py-4 bg-cyan-500/5 border border-dashed border-cyan-500/30 rounded-2xl text-center cursor-pointer hover:bg-cyan-500/10 transition-all">
+                    <span className="text-[10px] font-black text-cyan-400 uppercase tracking-widest">Upload Image</span>
+                    <input
+                      type="file"
+                      accept="image/png, image/jpeg"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const files = Array.from(e.target.files).filter(f => f.type === 'image/png' || f.type === 'image/jpeg');
+                        if (files.length === 0) return alert('Only PNG and JPG allowed.');
+                        const base64s = await Promise.all(
+                          files.map(file => new Promise(resolve => {
+                            const reader = new FileReader();
+                            reader.onloadend = () => resolve(reader.result);
+                            reader.readAsDataURL(file);
+                          }))
+                        );
+                        setFormData({ ...formData, images: [...(formData.images || []), ...base64s] });
+                      }}
+                    />
+                  </label>
                 </div>
 
                 <motion.button 
