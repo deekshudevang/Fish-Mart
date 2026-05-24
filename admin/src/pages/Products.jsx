@@ -16,6 +16,7 @@ export default function Products() {
   // But we keep the ProductForm logic for adding NEW assets
   const [showForm, setShowForm] = useState(false);
   const [prefilledCategory, setPrefilledCategory] = useState('');
+  const [editingProduct, setEditingProduct] = useState(null);
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -42,8 +43,14 @@ export default function Products() {
     fetchProducts();
   };
 
-  const handleOpenForm = (categoryFilter = '') => {
+  const handleUpdate = async (data) => {
+    await api.put(`/admin/products/${editingProduct.id}`, data);
+    fetchProducts();
+  };
+
+  const handleOpenForm = (categoryFilter = '', product = null) => {
     setPrefilledCategory(categoryFilter);
+    setEditingProduct(product);
     setShowForm(true);
   };
 
@@ -105,6 +112,7 @@ export default function Products() {
                   products={products}
                   onRefresh={fetchProducts}
                   onAddProduct={handleOpenForm}
+                  onEditProduct={(p) => handleOpenForm('', p)}
                 />
               ))}
             </div>
@@ -120,6 +128,7 @@ export default function Products() {
             products={products}
             onRefresh={fetchProducts}
             onAddProduct={handleOpenForm}
+            onEditProduct={(p) => handleOpenForm('', p)}
           />
         </div>
       );
@@ -207,13 +216,13 @@ export default function Products() {
         </motion.div>
       )}
 
-      {/* Full Deployment Form for NEW products */}
+      {/* Full Deployment Form for NEW/EDIT products */}
       <AnimatePresence>
         {showForm && (
           <ProductForm
-            product={null} // We only use this for ADD now, edit is inline!
+            product={editingProduct} // Use the selected product or null
             prefilledCategory={prefilledCategory}
-            onSave={handleCreate}
+            onSave={editingProduct ? handleUpdate : handleCreate}
             onClose={handleCloseForm}
           />
         )}

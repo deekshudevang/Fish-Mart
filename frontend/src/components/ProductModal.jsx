@@ -28,9 +28,7 @@ export default function ProductModal({ product, isOpen, onClose }) {
 
   // Parse specs from product or use defaults
   const specs = product.specs || {};
-  const careLevel = product.careLevel || 'Moderate';
-  const temperament = product.temperament || 'Peaceful';
-  const fishSize = product.size || '2-4 inches';
+  const care = product.care || {};
 
   return (
     <AnimatePresence>
@@ -174,18 +172,18 @@ export default function ProductModal({ product, isOpen, onClose }) {
                   <AnimatePresence mode="wait">
                     {activeTab === 'details' && (
                       <motion.div key="details" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                        <p className="text-[#7a8ba8] text-sm leading-relaxed">
-                          {product.description || 'This exotic specimen is hand-selected from the finest breeders. Known for its stunning coloration and active personality, this fish will be the centerpiece of any aquarium.'}
+                        <p className="text-[#7a8ba8] text-sm leading-relaxed whitespace-pre-wrap">
+                          {product.details || product.description || 'This exotic specimen is hand-selected from the finest breeders. Known for its stunning coloration and active personality, this fish will be the centerpiece of any aquarium.'}
                         </p>
                       </motion.div>
                     )}
                     {activeTab === 'specs' && (
                       <motion.div key="specs" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="grid grid-cols-2 gap-3">
                         {[
-                          { icon: Ruler, label: 'Size', value: fishSize },
-                          { icon: Thermometer, label: 'Temp', value: '72-82°F' },
-                          { icon: Droplets, label: 'pH Level', value: '6.5 - 7.5' },
-                          { icon: Clock, label: 'Lifespan', value: '3-5 years' },
+                          { icon: Ruler, label: 'Size', value: specs.size ? `${specs.size} inches` : 'Not Specified' },
+                          { icon: Thermometer, label: 'Temp', value: specs.temp ? `${specs.temp}°C` : 'Not Specified' },
+                          { icon: Droplets, label: 'pH Level', value: specs.ph || 'Not Specified' },
+                          { icon: Clock, label: 'Lifespan', value: specs.lifespan ? `${specs.lifespan} years` : 'Not Specified' },
                         ].map((spec, i) => (
                           <div key={i} className="p-3 bg-white/[0.02] rounded-xl border border-white/[0.04]">
                             <spec.icon size={14} className="text-[#00f5ff] mb-1.5" />
@@ -198,10 +196,10 @@ export default function ProductModal({ product, isOpen, onClose }) {
                     {activeTab === 'care' && (
                       <motion.div key="care" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-3">
                         {[
-                          { label: 'Care Level', value: careLevel, color: careLevel === 'Easy' ? 'emerald' : careLevel === 'Expert' ? 'red' : 'amber' },
-                          { label: 'Temperament', value: temperament, color: temperament === 'Peaceful' ? 'emerald' : temperament === 'Aggressive' ? 'red' : 'amber' },
-                          { label: 'Diet', value: 'Omnivore — pellets, flakes, frozen foods' },
-                          { label: 'Tank Size', value: 'Min. 10 gallons recommended' },
+                          { label: 'Care Level', value: care.careLevel || 'Not Specified', color: care.careLevel === 'Easy' ? 'emerald' : care.careLevel === 'Expert' ? 'red' : care.careLevel === 'Moderate' ? 'amber' : 'white' },
+                          { label: 'Temperament', value: care.temperament || 'Not Specified', color: care.temperament === 'Peaceful' ? 'emerald' : care.temperament === 'Aggressive' ? 'red' : care.temperament === 'Semi-Aggressive' ? 'amber' : 'white' },
+                          { label: 'Diet', value: care.diet || 'Not Specified' },
+                          { label: 'Tank Size', value: care.tankSize ? `${care.tankSize} gallons` : 'Not Specified' },
                         ].map((item, i) => (
                           <div key={i} className="flex justify-between items-center py-2 border-b border-white/[0.04]">
                             <span className="text-xs text-white/40 font-bold">{item.label}</span>

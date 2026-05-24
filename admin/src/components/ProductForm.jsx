@@ -12,6 +12,9 @@ export default function ProductForm({ product, prefilledCategory, onSave, onClos
     category: 'Freshwater',
     stock: 50,
     shipmentDate: '',
+    details: '',
+    specs: { size: '', temp: '', ph: '', lifespan: '' },
+    care: { careLevel: '', temperament: '', diet: '', tankSize: '' }
   });
 
   const [saving, setSaving] = useState(false);
@@ -28,6 +31,9 @@ export default function ProductForm({ product, prefilledCategory, onSave, onClos
         category: product.category || 'Freshwater',
         stock: product.stock ?? 50,
         shipmentDate: product.shipmentDate ? product.shipmentDate.split('T')[0] : '',
+        details: product.details || '',
+        specs: product.specs || { size: '', temp: '', ph: '', lifespan: '' },
+        care: product.care || { careLevel: '', temperament: '', diet: '', tankSize: '' },
       });
     } else if (prefilledCategory) {
       setForm(prev => ({
@@ -55,6 +61,41 @@ export default function ProductForm({ product, prefilledCategory, onSave, onClos
 
       if (!payload.shipmentDate) {
         delete payload.shipmentDate;
+      }
+
+      // Convert empty details to null
+      if (!payload.details || payload.details.trim() === '') {
+        payload.details = null;
+      }
+
+      // Convert empty specs to null
+      if (payload.specs) {
+        let hasSpec = false;
+        const cleanSpecs = {};
+        for (const [k, v] of Object.entries(payload.specs)) {
+          if (v && v.trim() !== '') {
+            cleanSpecs[k] = v;
+            hasSpec = true;
+          } else {
+            cleanSpecs[k] = null;
+          }
+        }
+        payload.specs = hasSpec ? cleanSpecs : null;
+      }
+
+      // Convert empty care to null
+      if (payload.care) {
+        let hasCare = false;
+        const cleanCare = {};
+        for (const [k, v] of Object.entries(payload.care)) {
+          if (v && v.trim() !== '') {
+            cleanCare[k] = v;
+            hasCare = true;
+          } else {
+            cleanCare[k] = null;
+          }
+        }
+        payload.care = hasCare ? cleanCare : null;
       }
 
       await onSave(payload);
@@ -165,6 +206,87 @@ export default function ProductForm({ product, prefilledCategory, onSave, onClos
                     placeholder="Provide detailed specifications..."
                     required
                   />
+               </div>
+               <div className="space-y-2">
+                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">Extended Details (Optional)</label>
+                  <textarea
+                    value={form.details || ''}
+                    onChange={(e) => set('details', e.target.value)}
+                    className="input-admin h-24 resize-none leading-relaxed"
+                    placeholder="Provide in-depth behavioral traits or history... (Leave blank for null)"
+                  />
+               </div>
+            </div>
+          </div>
+
+          {/* Subdivision 2.1: Technical Specifications */}
+          <div className="space-y-6">
+            <div className="flex items-center gap-3">
+               <div className="w-1.5 h-6 bg-purple-500 rounded-full" />
+               <h3 className="text-sm font-black text-white uppercase tracking-widest">Technical Specifications</h3>
+            </div>
+            <div className="grid md:grid-cols-2 gap-6">
+               <div className="space-y-2">
+                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">Size (Inches)</label>
+                  <input type="text" value={form.specs?.size || ''} onChange={(e) => set('specs', { ...form.specs, size: e.target.value })} className="input-admin" placeholder="e.g. 2-4" />
+               </div>
+               <div className="space-y-2">
+                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">Temperature (°C)</label>
+                  <input type="text" value={form.specs?.temp || ''} onChange={(e) => set('specs', { ...form.specs, temp: e.target.value })} className="input-admin" placeholder="e.g. 24-28" />
+               </div>
+               <div className="space-y-2">
+                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">pH Level</label>
+                  <input type="text" value={form.specs?.ph || ''} onChange={(e) => set('specs', { ...form.specs, ph: e.target.value })} className="input-admin" placeholder="e.g. 6.5-7.5" />
+               </div>
+               <div className="space-y-2">
+                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">Lifespan (Years)</label>
+                  <input type="text" value={form.specs?.lifespan || ''} onChange={(e) => set('specs', { ...form.specs, lifespan: e.target.value })} className="input-admin" placeholder="e.g. 3-5" />
+               </div>
+            </div>
+          </div>
+
+          {/* Subdivision 2.2: Care Requirements */}
+          <div className="space-y-6">
+            <div className="flex items-center gap-3">
+               <div className="w-1.5 h-6 bg-teal-500 rounded-full" />
+               <h3 className="text-sm font-black text-white uppercase tracking-widest">Care Requirements</h3>
+            </div>
+            <div className="grid md:grid-cols-2 gap-6">
+               <div className="space-y-2">
+                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">Care Level</label>
+                  <select value={form.care?.careLevel || ''} onChange={(e) => set('care', { ...form.care, careLevel: e.target.value })} className="input-admin">
+                     <option value="" className="bg-[#060a14] text-white">Select Level (or leave null)</option>
+                     <option value="Easy" className="bg-[#060a14] text-white">Easy</option>
+                     <option value="Moderate" className="bg-[#060a14] text-white">Moderate</option>
+                     <option value="Expert" className="bg-[#060a14] text-white">Expert</option>
+                  </select>
+               </div>
+               <div className="space-y-2">
+                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">Temperament</label>
+                  <select value={form.care?.temperament || ''} onChange={(e) => set('care', { ...form.care, temperament: e.target.value })} className="input-admin">
+                     <option value="" className="bg-[#060a14] text-white">Select Temperament</option>
+                     <option value="Peaceful" className="bg-[#060a14] text-white">Peaceful</option>
+                     <option value="Semi-Aggressive" className="bg-[#060a14] text-white">Semi-Aggressive</option>
+                     <option value="Aggressive" className="bg-[#060a14] text-white">Aggressive</option>
+                  </select>
+               </div>
+               <div className="space-y-2">
+                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">Diet</label>
+                  <input 
+                    type="text" 
+                    value={form.care?.diet || ''} 
+                    onChange={(e) => {
+                      // Prevent numeric values by stripping numbers
+                      const sanitized = e.target.value.replace(/[0-9]/g, '');
+                      set('care', { ...form.care, diet: sanitized });
+                    }} 
+                    className="input-admin" 
+                    placeholder="e.g. Omnivore" 
+                  />
+               </div>
+               <div className="space-y-2">
+                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">Tank Size (Gallons)</label>
+                  <input type="text" value={form.care?.tankSize || ''} onChange={(e) => set('care', { ...form.care, tankSize: e.target.value })} className="input-admin" placeholder="e.g. 10" />
                </div>
             </div>
           </div>

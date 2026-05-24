@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FiPlus, FiEdit3, FiTrash2, FiSave, FiX, FiImage, FiVideo, FiDollarSign, FiBox, FiCalendar } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 
-export default function InventoryBlock({ title, categoryFilter, products, onRefresh, onAddProduct }) {
+export default function InventoryBlock({ title, categoryFilter, products, onRefresh, onAddProduct, onEditProduct }) {
   const { api } = useAuth();
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
@@ -129,7 +129,13 @@ export default function InventoryBlock({ title, categoryFilter, products, onRefr
                     className={`flex items-center gap-2 px-4 py-3 rounded-xl border transition-all text-[10px] font-black uppercase tracking-widest ${isEditing ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400' : 'bg-white/5 border-white/10 text-slate-400 hover:text-white'}`}
                   >
                     {isEditing ? <FiX size={14} /> : <FiEdit3 size={14} />}
-                    {isEditing ? 'Close Features' : 'Modify Features'}
+                    {isEditing ? 'Close Features' : 'Quick Edit'}
+                  </button>
+                  <button 
+                    onClick={() => onEditProduct(product)}
+                    className="flex items-center gap-2 px-4 py-3 rounded-xl border border-white/10 bg-white/5 text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-500/30 transition-all text-[10px] font-black uppercase tracking-widest"
+                  >
+                    <FiEdit3 size={14} /> Full Edit
                   </button>
                   <button 
                     onClick={() => handleDelete(product.id)}

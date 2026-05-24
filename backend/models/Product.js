@@ -57,6 +57,28 @@ const Product = sequelize.define(
       defaultValue: () => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       field: 'shipment_date',
     },
+    details: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    specs: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      get() {
+        const rawValue = this.getDataValue('specs');
+        if (!rawValue) return null;
+        return typeof rawValue === 'string' ? JSON.parse(rawValue) : rawValue;
+      }
+    },
+    care: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      get() {
+        const rawValue = this.getDataValue('care');
+        if (!rawValue) return null;
+        return typeof rawValue === 'string' ? JSON.parse(rawValue) : rawValue;
+      }
+    },
   },
   {
     tableName: 'products',

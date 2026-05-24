@@ -46,7 +46,7 @@ app.use(cors({
   credentials: true
 }));
 app.use(cookieParser());
-app.use(express.json({ limit: '2mb' })); // S1 FIX: Reduced from 5mb to 2mb for security
+app.use(express.json({ limit: '50mb' })); // Increased limit to 50mb to allow for base64 image uploads
 
 // Apply rate limiters
 app.use('/api/auth', authLimiter);
@@ -113,7 +113,7 @@ async function start() {
     console.log('✅ Database connected successfully');
 
     // Sync models (creates tables if they don't exist)
-    await sequelize.sync();
+    await sequelize.sync({ alter: true });
     console.log('✅ Database tables synced');
 
     app.listen(PORT, () => {
