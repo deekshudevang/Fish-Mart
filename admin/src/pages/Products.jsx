@@ -2,8 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import ProductForm from '../components/ProductForm';
 import InventoryBlock from '../components/InventoryBlock';
+import InventoryTable from '../components/InventoryTable';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiSearch, FiFilter, FiRefreshCw, FiPackage, FiPlus } from 'react-icons/fi';
+import { FiSearch, FiFilter, FiRefreshCw, FiPackage, FiPlus, FiGrid, FiList } from 'react-icons/fi';
 
 export default function Products() {
   const { api, admin } = useAuth();
@@ -11,6 +12,7 @@ export default function Products() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All');
+  const [viewMode, setViewMode] = useState('grid');
   
   // We no longer need bulk selection/sort variables for the new Block layout
   // But we keep the ProductForm logic for adding NEW assets
@@ -188,6 +190,23 @@ export default function Products() {
               </select>
             </div>
 
+            <div className="flex bg-white/[0.03] border border-white/5 rounded-2xl p-1">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-3 rounded-xl transition-all ${viewMode === 'grid' ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/20' : 'text-slate-500 hover:text-white'}`}
+                title="Grid View"
+              >
+                <FiGrid size={16} />
+              </button>
+              <button
+                onClick={() => setViewMode('inventory')}
+                className={`p-3 rounded-xl transition-all ${viewMode === 'inventory' ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/20' : 'text-slate-500 hover:text-white'}`}
+                title="Inventory Analytics View"
+              >
+                <FiList size={16} />
+              </button>
+            </div>
+
             <button 
               onClick={fetchProducts} 
               className="p-4 bg-white/[0.03] border border-white/5 rounded-2xl text-slate-500 hover:text-white transition-all shadow-lg"
@@ -212,7 +231,11 @@ export default function Products() {
           transition={{ delay: 0.1 }}
           className="relative"
         >
-          {renderBlocks()}
+          {viewMode === 'inventory' ? (
+            <InventoryTable products={products} onRefresh={fetchProducts} />
+          ) : (
+            renderBlocks()
+          )}
         </motion.div>
       )}
 

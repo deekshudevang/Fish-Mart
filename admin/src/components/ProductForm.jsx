@@ -11,6 +11,7 @@ export default function ProductForm({ product, prefilledCategory, onSave, onClos
     videoUrl: '',
     category: 'Freshwater',
     stock: 50,
+    lowStockThreshold: 5,
     shipmentDate: '',
     details: '',
     specs: { size: '', temp: '', ph: '', lifespan: '' },
@@ -30,6 +31,7 @@ export default function ProductForm({ product, prefilledCategory, onSave, onClos
         videoUrl: product.videoUrl || '',
         category: product.category || 'Freshwater',
         stock: product.stock ?? 50,
+        lowStockThreshold: product.lowStockThreshold ?? 5,
         shipmentDate: product.shipmentDate ? product.shipmentDate.split('T')[0] : '',
         details: product.details || '',
         specs: product.specs || { size: '', temp: '', ph: '', lifespan: '' },
@@ -57,6 +59,7 @@ export default function ProductForm({ product, prefilledCategory, onSave, onClos
         category: finalCategory,
         price: Number(form.price) || 0,
         stock: Number(form.stock) || 0,
+        lowStockThreshold: Number(form.lowStockThreshold) || 0,
       };
 
       if (!payload.shipmentDate) {
@@ -321,6 +324,18 @@ export default function ProductForm({ product, prefilledCategory, onSave, onClos
                     type="number"
                     value={form.stock}
                     onChange={(e) => set('stock', e.target.value)}
+                    className="input-admin"
+                    min="0"
+                  />
+               </div>
+               <div className="space-y-2">
+                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                     <FiBox size={10} /> Alert Threshold
+                  </label>
+                  <input
+                    type="number"
+                    value={form.lowStockThreshold}
+                    onChange={(e) => set('lowStockThreshold', e.target.value)}
                     className="input-admin"
                     min="0"
                   />

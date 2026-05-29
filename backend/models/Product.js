@@ -52,6 +52,17 @@ const Product = sequelize.define(
       defaultValue: 50,
       validate: { min: 0 },
     },
+    initialStock: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: 'initial_stock',
+    },
+    lowStockThreshold: {
+      type: DataTypes.INTEGER,
+      defaultValue: 5,
+      field: 'low_stock_threshold',
+      validate: { min: 0 },
+    },
     shipmentDate: {
       type: DataTypes.DATE,
       defaultValue: () => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
@@ -84,6 +95,13 @@ const Product = sequelize.define(
     tableName: 'products',
     underscored: true,
     timestamps: true,
+    hooks: {
+      beforeCreate: (product, options) => {
+        if (product.initialStock === undefined || product.initialStock === null) {
+          product.initialStock = product.stock;
+        }
+      }
+    }
   }
 );
 

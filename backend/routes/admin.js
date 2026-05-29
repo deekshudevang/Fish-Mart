@@ -59,7 +59,7 @@ const processAndSaveImages = (images) => {
 
 // H2 FIX: Whitelist allowed product fields — no mass assignment
 const sanitizeProductInput = (body) => {
-  const allowed = ['name', 'description', 'price', 'stock', 'category', 'images', 'videoUrl', 'details', 'specs', 'care'];
+  const allowed = ['name', 'description', 'price', 'stock', 'initialStock', 'lowStockThreshold', 'category', 'images', 'videoUrl', 'details', 'specs', 'care'];
   const sanitized = {};
   for (const key of allowed) {
     if (body[key] !== undefined) {
